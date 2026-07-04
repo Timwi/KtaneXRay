@@ -22,6 +22,7 @@ public class XRayModule : XRayModuleBase
     private XRayRules _rules;
     private int _col;  // for Souvenir
     private int _row;  // for Souvenir
+    private int _3x3;  // for Souvenir
 
     static SymbolInfo convertForSeed1(int icon)
     {
@@ -101,13 +102,13 @@ public class XRayModule : XRayModuleBase
         _row = Rnd.Range(0, 12);
 
         // This makes sure that we don’t go off the edge of the table
-        var dir = Enumerable.Range(0, 9).Where(dr => !(_col == 0 && dr % 3 == 0) && !(_col == 11 && dr % 3 == 2) && !(_row == 0 && dr / 3 == 0) && !(_row == 11 && dr / 3 == 2)).PickRandom();
-        _solution = _rules.NumbersInTable[(_row + dir / 3 - 1) * 12 + _col + (dir % 3 - 1)];
+        _3x3 = Enumerable.Range(0, 9).Where(dr => !(_col == 0 && dr % 3 == 0) && !(_col == 11 && dr % 3 == 2) && !(_row == 0 && dr / 3 == 0) && !(_row == 11 && dr / 3 == 2)).PickRandom();
+        _solution = _rules.NumbersInTable[(_row + _3x3 / 3 - 1) * 12 + _col + (_3x3 % 3 - 1)];
 
         Debug.LogFormat("[X-Ray #{0}] Column {1}, Row {2}: number there is {3}.", _moduleId, _rules.Columns[_col], _rules.Rows[_row], _rules.NumbersInTable[_row * 12 + _col] + 1);
-        Debug.LogFormat("[X-Ray #{0}] {1} = {2}. Solution is {3}.", _moduleId, _rules.Table3x3[dir], "Move up-left,Move up,Move up-right,Move left,Stay put,Move right,Move down-left,Move down,Move down-right".Split(',')[dir], _solution + 1);
+        Debug.LogFormat("[X-Ray #{0}] {1} = {2}. Solution is {3}.", _moduleId, _rules.Table3x3[_3x3], "Move up-left,Move up,Move up-right,Move left,Stay put,Move right,Move down-left,Move down,Move down-right".Split(',')[_3x3], _solution + 1);
 
-        var icons = new[] { _rules.Columns[_col], _rules.Rows[_row], _rules.Table3x3[dir] };
+        var icons = new[] { _rules.Columns[_col], _rules.Rows[_row], _rules.Table3x3[_3x3] };
         icons.Shuffle();
         var mode = (ScanningMode) Rnd.Range(0, 3);
         Debug.LogFormat("[X-Ray #{0}] Scanning {1}.", _moduleId,
